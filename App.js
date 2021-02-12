@@ -7,31 +7,32 @@ import {
   FlatList,
 } from 'react-native';
 
-const PUBLIC_REPO = "https://api.github.com/repos/JesusVasq/GM_Technical_Challenge/commits?sha=develop&per_page=50";
+const PUBLIC_REPO = "https://api.github.com/repos/GeekyAnts/NativeBase/commits";
 
+// Component used to render individual items in FlatList
 const Commit = ({message, sha, author}) => (
-  <View style={{flex: 1, flexDirection: 'column'}}>
-    <Text>{message}</Text>
-    <Text>{sha}</Text>
-    <Text>{author}</Text>
+  <View style={{flex: 1, flexDirection: 'column', margin: 5}}>
+    <Text style={{fontSize: 15, marginBottom: 5}}>{message}</Text>
+    <Text style={{fontSize: 10,}}>{sha}</Text>
+    <Text style={{alignSelf: "flex-end"}}>{author}</Text>
   </View>
 );
 
+// Component used for visual seperator between items in FlatList
 const RenderSeparator = () => (
   <View
     style={{
-      backgroundColor: 'black',
-      height: 0.5,
+      backgroundColor: '#d3d3d3',
+      height: 5,
     }}
   />
 );
 
 const App = () => {
-
+  // Commits stored as an array of dictionaries
   const [commitList, setCommitList] = useState([]);
 
   useEffect(() => {
-    // console.log("Hello");
     fetch(PUBLIC_REPO, {method: "GET"})
     .then(response => response.json())
     .then(result => parseData(result))
@@ -41,12 +42,10 @@ const App = () => {
   const renderCommit = ({item}) => (
     <Commit author={`${item.author}`} sha={`${item.sha}`} message={`${item.message}`}/>
   );
-
+  // parse raw JSON data returned  in response and extract data needed 
   let parseData = (commitJSONArray) =>{
-    // console.log("Parsing data!");
 
     let tempCommitList = [];
-
     for(var i = 0; i < commitJSONArray.length; i ++){
       let single_commit = commitJSONArray[i];
 
@@ -56,17 +55,13 @@ const App = () => {
 
       tempCommitList.push({sha: sha, author: author, message: message});
     }
-
-    // console.log(tempCommitList);
     setCommitList(tempCommitList);
   }
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
       }}>
       <FlatList
         data={commitList}
@@ -74,14 +69,8 @@ const App = () => {
         keyExtractor={commit => commit.sha}
         ItemSeparatorComponent={RenderSeparator}
       />
-    </View>
+    </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor:"#FF0000",
-  }
-});
 
 export default App;
